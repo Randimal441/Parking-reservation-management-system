@@ -1,16 +1,20 @@
 import React from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { colors } from '../utils/helpers';
 
-const Sidebar = ({ activeView, setActiveView, userType }) => {
+const Sidebar = ({ userType }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const userMenuItems = [
-    { id: 'reservation-portal', label: 'Reservation Portal', icon: '🅿️' },
-    { id: 'tracking-status', label: 'Tracking Status', icon: '📍' },
+    { id: '/user/reservations', label: 'Reservation Portal', icon: '🅿️' },
+    { id: '/user/tracking', label: 'Tracking Status', icon: '📍' },
   ];
 
   const adminMenuItems = [
-    { id: 'driver-management', label: 'Driver Account Management', icon: '👥' },
-    { id: 'reservation-management', label: 'Reservation Management', icon: '📋' },
-    { id: 'admin-tracking', label: 'Tracking Status', icon: '📊' },
+    { id: '/admin/drivers', label: 'Driver Account Management', icon: '👥' },
+    { id: '/admin/reservations', label: 'Reservation Management', icon: '📋' },
+    { id: '/admin/tracking', label: 'Admin Tracking Status', icon: '📊' },
   ];
 
   const menuItems = userType === 'user' ? userMenuItems : adminMenuItems;
@@ -25,13 +29,13 @@ const Sidebar = ({ activeView, setActiveView, userType }) => {
           {menuItems.map((item) => (
             <li key={item.id} style={{ marginBottom: '0.5rem' }}>
               <button
-                onClick={() => setActiveView(item.id)}
+                onClick={() => navigate(item.id)}
                 style={{
                   width: '100%',
                   padding: '0.75rem',
                   border: 'none',
                   borderRadius: '4px',
-                  backgroundColor: activeView === item.id ? colors.blue : 'transparent',
+                  backgroundColor: location.pathname === item.id ? colors.blue : 'transparent',
                   color: colors.white,
                   cursor: 'pointer',
                   textAlign: 'left',
@@ -39,12 +43,12 @@ const Sidebar = ({ activeView, setActiveView, userType }) => {
                   transition: 'background-color 0.2s',
                 }}
                 onMouseOver={(e) => {
-                  if (activeView !== item.id) {
+                  if (location.pathname !== item.id) {
                     e.target.style.backgroundColor = colors.orange;
                   }
                 }}
                 onMouseOut={(e) => {
-                  if (activeView !== item.id) {
+                  if (location.pathname !== item.id) {
                     e.target.style.backgroundColor = 'transparent';
                   }
                 }}

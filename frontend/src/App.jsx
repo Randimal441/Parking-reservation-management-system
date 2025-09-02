@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar.jsx';
 import Sidebar from './components/Sidebar.jsx';
+
+// Auth Pages
+import SignIn from './pages/auth/SignIn.jsx';
+import SignUp from './pages/auth/SignUp.jsx';
 
 // User Pages
 import ReservationPortal from './pages/user/ReservationPortal.jsx';
@@ -12,44 +17,125 @@ import ReservationManagement from './pages/admin/ReservationManagement.jsx';
 import AdminTrackingStatus from './pages/admin/AdminTrackingStatus.jsx';
 
 function App() {
-  const [activeView, setActiveView] = useState('reservation-portal');
-  const [userType, setUserType] = useState('user'); // 'user' or 'admin'
+  const [userType, setUserType] = useState('admin'); // 'user' or 'admin'
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
 
-  const renderContent = () => {
-    switch (activeView) {
-      // User views
-      case 'reservation-portal':
-        return <ReservationPortal />;
-      case 'tracking-status':
-        return <TrackingStatus />;
-      
-      // Admin views
-      case 'driver-management':
-        return <DriverAccountManagement />;
-      case 'reservation-management':
-        return <ReservationManagement />;
-      case 'admin-tracking':
-        return <AdminTrackingStatus />;
-      
-      default:
-        return <ReservationPortal />;
-    }
+  // Protected Route Component
+  const ProtectedRoute = ({ children }) => {
+    return isAuthenticated ? children : <Navigate to="/signin" replace />;
+  };
+
+  // Auth Route Component (redirect to dashboard if already authenticated)
+  const AuthRoute = ({ children }) => {
+    // For testing purposes, allow access to auth pages even when authenticated
+    return children;
   };
 
   return (
-    <div className="app">
-      <Navbar userType={userType} setUserType={setUserType} />
-      <div style={{ display: 'flex' }}>
-        <Sidebar 
-          activeView={activeView} 
-          setActiveView={setActiveView} 
-          userType={userType} 
-        />
-        <div className="content" style={{ flex: 1 }}>
-          {renderContent()}
-        </div>
+    <Router>
+      <div className="app">
+        {isAuthenticated ? (
+          // Show main app with navbar and sidebar when authenticated
+          <>
+            <Navbar 
+              userType={userType} 
+              setUserType={setUserType} 
+              setIsAuthenticated={setIsAuthenticated}
+            />
+            <div style={{ display: 'flex' }}>
+              <Sidebar userType={userType} />
+              <div className="content" style={{ flex: 1 }}>
+                <Routes>
+                  {/* Protected Routes - User Pages */}
+                  <Route path="/dashboard" element={
+                    <ProtectedRoute>
+                      <ReservationPortal />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/user/reservations" element={
+                    <ProtectedRoute>
+                      <ReservationPortal />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/user/tracking" element={
+                    <ProtectedRoute>
+                      <TrackingStatus />
+                    </ProtectedRoute>
+                  } />
+                  
+                  {/* Protected Routes - Admin Pages */}
+                  <Route path="/admin/drivers" element={
+                    <ProtectedRoute>
+                      <DriverAccountManagement />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/admin/reservations" element={
+                    <ProtectedRoute>
+                      <ReservationManagement />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/admin/tracking" element={
+                    <ProtectedRoute>
+                      <AdminTrackingStatus />
+                    </ProtectedRoute>
+                  } />
+                  
+                  {/* Legacy routes for backward compatibility */}
+                  <Route path="/tracking" element={
+                    <ProtectedRoute>
+                      <TrackingStatus />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/driver-management" element={
+                    <ProtectedRoute>
+                      <DriverAccountManagement />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/reservation-management" element={
+                    <ProtectedRoute>
+                      <ReservationManagement />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/admin-tracking" element={
+                    <ProtectedRoute>
+                      <AdminTrackingStatus />
+                    </ProtectedRoute>
+                  } />
+                  
+                  {/* Redirect to appropriate dashboard based on user type */}
+                  <Route path="*" element={
+                    <Navigate 
+                      to={userType === 'admin' ? '/admin/drivers' : '/user/reservations'} 
+                      replace 
+                    />
+                  } />
+                </Routes>
+              </div>
+            </div>
+          </>
+        ) : (
+          // Show only auth pages when not authenticated
+          <Routes>
+            {/* Auth Routes */}
+            <Route path="/signin" element={
+              <AuthRoute>
+                <SignIn 
+                  setIsAuthenticated={setIsAuthenticated} 
+                  setUserType={setUserType}
+                />
+              </AuthRoute>
+            } />
+            <Route path="/signup" element={
+              <AuthRoute>
+                <SignUp />
+              </AuthRoute>
+            } />
+            {/* Redirect to signin for unauthenticated users */}
+            <Route path="*" element={<Navigate to="/signin" replace />} />
+          </Routes>
+        )}
       </div>
-    </div>
+    </Router>
   );
 }
 
