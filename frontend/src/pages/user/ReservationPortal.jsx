@@ -2,7 +2,18 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 import { reservationAPI, parkingSlotAPI, socket } from '../../services/api';
-import { colors } from '../../utils/helpers';
+
+// Professional color scheme
+const colors = {
+  white: '#FFFFFF',
+  cream: '#FBE1AD',
+  blue: '#0074D5',
+  green: '#069B47',
+  red: '#C80306',
+  darkGray: '#40403E',
+  orange: '#C16D00',
+  yellow: '#F1A100'
+};
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -198,45 +209,143 @@ const ReservationPortal = () => {
   };
 
   return (
-    <div>
-      <h2 style={{ marginBottom: '2rem', color: colors.darkGray }}>
-        Reservation Portal
-      </h2>
+    <div style={{
+      padding: '2rem',
+      background: '#f8f9fa',
+      minHeight: '100vh',
+      fontFamily: 'Arial, sans-serif'
+    }}>
+      {/* Header */}
+      <div style={{
+        background: `linear-gradient(135deg, ${colors.blue}, ${colors.green})`,
+        padding: '2rem',
+        borderRadius: '15px',
+        marginBottom: '2rem',
+        color: colors.white,
+        boxShadow: '0 8px 25px rgba(0, 116, 213, 0.2)'
+      }}>
+        <h1 style={{
+          margin: 0,
+          fontSize: '2.5rem',
+          fontWeight: 'bold',
+          marginBottom: '0.5rem'
+        }}>
+          Reservation Portal
+        </h1>
+        <p style={{
+          margin: 0,
+          fontSize: '1.1rem',
+          opacity: 0.9
+        }}>
+          Book your parking space with ease
+        </p>
+      </div>
       
+      {/* Message Alert */}
       {message.text && (
-        <div className={`alert alert-${message.type === 'error' ? 'danger' : 'success'}`}>
+        <div style={{
+          background: message.type === 'error' ? `${colors.red}10` : `${colors.green}10`,
+          border: `1px solid ${message.type === 'error' ? colors.red : colors.green}`,
+          color: message.type === 'error' ? colors.red : colors.green,
+          padding: '1rem',
+          borderRadius: '12px',
+          marginBottom: '2rem',
+          fontSize: '0.95rem',
+          fontWeight: '500'
+        }}>
           {message.text}
         </div>
       )}
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
         {/* Reservation Form */}
-        <div className="card">
-          <h3 style={{ marginBottom: '1.5rem', color: colors.darkGray }}>
+        <div style={{
+          background: colors.white,
+          borderRadius: '15px',
+          padding: '2rem',
+          boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)',
+          border: `1px solid #E1E5E9`
+        }}>
+          <h3 style={{
+            marginBottom: '1.5rem',
+            color: colors.darkGray,
+            fontSize: '1.8rem',
+            fontWeight: 'bold'
+          }}>
             Make a Reservation
           </h3>
           <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label className="form-label">Driver ID</label>
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{
+                display: 'block',
+                marginBottom: '0.5rem',
+                color: colors.darkGray,
+                fontWeight: '600',
+                fontSize: '0.95rem'
+              }}>
+                Driver ID
+              </label>
               <input
                 type="text"
                 name="driverId"
                 value={formData.driverId}
                 onChange={handleInputChange}
-                className="form-control"
                 required
                 placeholder="Enter your driver ID"
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  border: '2px solid #E1E5E9',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  transition: 'all 0.3s ease',
+                  boxSizing: 'border-box',
+                  backgroundColor: colors.white
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = colors.blue;
+                  e.target.style.boxShadow = `0 0 0 3px ${colors.blue}20`;
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#E1E5E9';
+                  e.target.style.boxShadow = 'none';
+                }}
               />
             </div>
 
-            <div className="form-group">
-              <label className="form-label">Parking Slot</label>
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{
+                display: 'block',
+                marginBottom: '0.5rem',
+                color: colors.darkGray,
+                fontWeight: '600',
+                fontSize: '0.95rem'
+              }}>
+                Parking Slot
+              </label>
               <select
                 name="parkingSlotId"
                 value={formData.parkingSlotId}
                 onChange={handleInputChange}
-                className="form-control"
                 required
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  border: '2px solid #E1E5E9',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  transition: 'all 0.3s ease',
+                  boxSizing: 'border-box',
+                  backgroundColor: colors.white
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = colors.blue;
+                  e.target.style.boxShadow = `0 0 0 3px ${colors.blue}20`;
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#E1E5E9';
+                  e.target.style.boxShadow = 'none';
+                }}
               >
                 <option value="">Select a parking slot</option>
                 {availableSlots.map(slot => (
@@ -247,58 +356,181 @@ const ReservationPortal = () => {
               </select>
             </div>
 
-            <div className="form-group">
-              <label className="form-label">Date</label>
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{
+                display: 'block',
+                marginBottom: '0.5rem',
+                color: colors.darkGray,
+                fontWeight: '600',
+                fontSize: '0.95rem'
+              }}>
+                Date
+              </label>
               <input
                 type="date"
                 name="date"
                 value={formData.date}
                 onChange={handleInputChange}
-                className="form-control"
                 required
                 min={new Date().toISOString().split('T')[0]}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  border: '2px solid #E1E5E9',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  transition: 'all 0.3s ease',
+                  boxSizing: 'border-box',
+                  backgroundColor: colors.white
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = colors.blue;
+                  e.target.style.boxShadow = `0 0 0 3px ${colors.blue}20`;
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#E1E5E9';
+                  e.target.style.boxShadow = 'none';
+                }}
               />
             </div>
 
-            <div className="form-group">
-              <label className="form-label">Entry Time</label>
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{
+                display: 'block',
+                marginBottom: '0.5rem',
+                color: colors.darkGray,
+                fontWeight: '600',
+                fontSize: '0.95rem'
+              }}>
+                Entry Time
+              </label>
               <input
                 type="time"
                 name="entryTime"
                 value={formData.entryTime}
                 onChange={handleInputChange}
-                className="form-control"
                 required
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  border: '2px solid #E1E5E9',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  transition: 'all 0.3s ease',
+                  boxSizing: 'border-box',
+                  backgroundColor: colors.white
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = colors.blue;
+                  e.target.style.boxShadow = `0 0 0 3px ${colors.blue}20`;
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#E1E5E9';
+                  e.target.style.boxShadow = 'none';
+                }}
               />
             </div>
 
-            <div className="form-group">
-              <label className="form-label">Exit Time</label>
+            <div style={{ marginBottom: '2rem' }}>
+              <label style={{
+                display: 'block',
+                marginBottom: '0.5rem',
+                color: colors.darkGray,
+                fontWeight: '600',
+                fontSize: '0.95rem'
+              }}>
+                Exit Time
+              </label>
               <input
                 type="time"
                 name="exitTime"
                 value={formData.exitTime}
                 onChange={handleInputChange}
-                className="form-control"
                 required
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  border: '2px solid #E1E5E9',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  transition: 'all 0.3s ease',
+                  boxSizing: 'border-box',
+                  backgroundColor: colors.white
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = colors.blue;
+                  e.target.style.boxShadow = `0 0 0 3px ${colors.blue}20`;
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#E1E5E9';
+                  e.target.style.boxShadow = 'none';
+                }}
               />
             </div>
 
             <button 
               type="submit" 
-              className="btn-primary" 
               disabled={loading}
-              style={{ width: '100%', padding: '0.75rem' }}
+              style={{
+                width: '100%',
+                padding: '1rem',
+                background: loading ? '#E1E5E9' : `linear-gradient(135deg, ${colors.blue}, ${colors.green})`,
+                color: colors.white,
+                border: 'none',
+                borderRadius: '12px',
+                fontSize: '1.1rem',
+                fontWeight: '600',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                transition: 'all 0.3s ease',
+                boxShadow: loading ? 'none' : '0 8px 25px rgba(0, 116, 213, 0.3)'
+              }}
+              onMouseEnter={(e) => {
+                if (!loading) {
+                  e.target.style.transform = 'translateY(-2px)';
+                  e.target.style.boxShadow = '0 12px 35px rgba(0, 116, 213, 0.4)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!loading) {
+                  e.target.style.transform = 'translateY(0)';
+                  e.target.style.boxShadow = '0 8px 25px rgba(0, 116, 213, 0.3)';
+                }
+              }}
             >
-              {loading ? 'Creating Reservation...' : 'Reserve Parking Slot'}
+              {loading ? (
+                <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                  <div style={{
+                    width: '20px',
+                    height: '20px',
+                    border: `2px solid ${colors.white}`,
+                    borderTop: '2px solid transparent',
+                    borderRadius: '50%',
+                    animation: 'spin 1s linear infinite'
+                  }}></div>
+                  Creating Reservation...
+                </span>
+              ) : (
+                'Create Reservation'
+              )}
             </button>
           </form>
         </div>
 
         {/* Live Chart */}
-        <div className="card">
+        <div style={{
+          background: colors.white,
+          borderRadius: '15px',
+          padding: '2rem',
+          boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)',
+          border: `1px solid #E1E5E9`
+        }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-            <h3 style={{ margin: 0, color: colors.darkGray }}>
+            <h3 style={{
+              margin: 0,
+              color: colors.darkGray,
+              fontSize: '1.8rem',
+              fontWeight: 'bold'
+            }}>
               Parking Slot Availability
             </h3>
             <button 
@@ -308,30 +540,101 @@ const ReservationPortal = () => {
                 fetchSlotStatistics();
               }}
               style={{
-                padding: '0.5rem 1rem',
-                backgroundColor: colors.blue,
-                color: 'white',
+                padding: '0.75rem 1.5rem',
+                background: `linear-gradient(135deg, ${colors.blue}, ${colors.green})`,
+                color: colors.white,
                 border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer'
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '0.9rem',
+                fontWeight: '600',
+                transition: 'all 0.3s ease',
+                boxShadow: '0 4px 15px rgba(0, 116, 213, 0.3)'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.transform = 'translateY(-1px)';
+                e.target.style.boxShadow = '0 6px 20px rgba(0, 116, 213, 0.4)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = 'translateY(0)';
+                e.target.style.boxShadow = '0 4px 15px rgba(0, 116, 213, 0.3)';
               }}
             >
-              Refresh
+              🔄 Refresh
             </button>
           </div>
           
-          <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', marginBottom: '2rem' }}>
-            <div className="stat-card total">
-              <div className="stat-number">{slotStats.totalSlots}</div>
-              <div className="stat-label">Total Slots</div>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: '1rem',
+            marginBottom: '2rem'
+          }}>
+            <div style={{
+              background: `linear-gradient(135deg, ${colors.blue}, ${colors.green})`,
+              color: colors.white,
+              padding: '1.5rem',
+              borderRadius: '12px',
+              textAlign: 'center',
+              boxShadow: '0 8px 25px rgba(0, 116, 213, 0.3)'
+            }}>
+              <div style={{
+                fontSize: '2rem',
+                fontWeight: 'bold',
+                marginBottom: '0.5rem'
+              }}>
+                {slotStats.totalSlots}
+              </div>
+              <div style={{
+                fontSize: '0.9rem',
+                opacity: 0.9
+              }}>
+                Total Slots
+              </div>
             </div>
-            <div className="stat-card available">
-              <div className="stat-number">{slotStats.availableSlots}</div>
-              <div className="stat-label">Available</div>
+            <div style={{
+              background: `linear-gradient(135deg, ${colors.green}, ${colors.blue})`,
+              color: colors.white,
+              padding: '1.5rem',
+              borderRadius: '12px',
+              textAlign: 'center',
+              boxShadow: '0 8px 25px rgba(6, 155, 71, 0.3)'
+            }}>
+              <div style={{
+                fontSize: '2rem',
+                fontWeight: 'bold',
+                marginBottom: '0.5rem'
+              }}>
+                {slotStats.availableSlots}
+              </div>
+              <div style={{
+                fontSize: '0.9rem',
+                opacity: 0.9
+              }}>
+                Available
+              </div>
             </div>
-            <div className="stat-card reserved">
-              <div className="stat-number">{slotStats.reservedSlots}</div>
-              <div className="stat-label">Reserved</div>
+            <div style={{
+              background: `linear-gradient(135deg, ${colors.orange}, ${colors.yellow})`,
+              color: colors.white,
+              padding: '1.5rem',
+              borderRadius: '12px',
+              textAlign: 'center',
+              boxShadow: '0 8px 25px rgba(193, 109, 0, 0.3)'
+            }}>
+              <div style={{
+                fontSize: '2rem',
+                fontWeight: 'bold',
+                marginBottom: '0.5rem'
+              }}>
+                {slotStats.reservedSlots}
+              </div>
+              <div style={{
+                fontSize: '0.9rem',
+                opacity: 0.9
+              }}>
+                Reserved
+              </div>
             </div>
           </div>
 
@@ -342,32 +645,80 @@ const ReservationPortal = () => {
       </div>
 
       {/* Available Slots List */}
-      <div className="card" style={{ marginTop: '2rem' }}>
-        <h3 style={{ marginBottom: '1.5rem', color: colors.darkGray }}>
+      <div style={{
+        background: colors.white,
+        borderRadius: '15px',
+        padding: '2rem',
+        marginTop: '2rem',
+        boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)',
+        border: `1px solid #E1E5E9`
+      }}>
+        <h3 style={{
+          marginBottom: '1.5rem',
+          color: colors.darkGray,
+          fontSize: '1.8rem',
+          fontWeight: 'bold'
+        }}>
           Available Parking Slots
         </h3>
         {availableSlots.length === 0 ? (
-          <div className="no-data">No parking slots available at the moment</div>
+          <div style={{
+            textAlign: 'center',
+            padding: '3rem',
+            color: colors.darkGray,
+            fontSize: '1.1rem',
+            opacity: 0.7
+          }}>
+            No parking slots available at the moment
+          </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1rem' }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
+            gap: '1.5rem'
+          }}>
             {availableSlots.map(slot => (
               <div 
                 key={slot._id} 
                 style={{
-                  padding: '1rem',
+                  padding: '1.5rem',
                   border: `2px solid ${colors.green}`,
-                  borderRadius: '8px',
-                  backgroundColor: colors.cream,
-                  textAlign: 'center'
+                  borderRadius: '12px',
+                  background: `linear-gradient(135deg, ${colors.cream}20, ${colors.white})`,
+                  textAlign: 'center',
+                  transition: 'all 0.3s ease',
+                  boxShadow: '0 4px 15px rgba(6, 155, 71, 0.1)'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.transform = 'translateY(-2px)';
+                  e.target.style.boxShadow = '0 8px 25px rgba(6, 155, 71, 0.2)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.transform = 'translateY(0)';
+                  e.target.style.boxShadow = '0 4px 15px rgba(6, 155, 71, 0.1)';
                 }}
               >
-                <h4 style={{ margin: '0 0 0.5rem 0', color: colors.darkGray }}>
+                <h4 style={{
+                  margin: '0 0 0.5rem 0',
+                  color: colors.darkGray,
+                  fontSize: '1.2rem',
+                  fontWeight: 'bold'
+                }}>
                   {slot.slotId}
                 </h4>
-                <p style={{ margin: '0 0 0.5rem 0', color: colors.darkGray }}>
+                <p style={{
+                  margin: '0 0 0.5rem 0',
+                  color: colors.darkGray,
+                  fontSize: '1rem'
+                }}>
                   {slot.location}
                 </p>
-                <p style={{ margin: 0, fontSize: '0.9rem', color: colors.darkGray }}>
+                <p style={{
+                  margin: 0,
+                  fontSize: '0.9rem',
+                  color: colors.darkGray,
+                  opacity: 0.8
+                }}>
                   Floor: {slot.floor} | Section: {slot.section}
                 </p>
               </div>
@@ -375,6 +726,31 @@ const ReservationPortal = () => {
           </div>
         )}
       </div>
+
+      {/* Real-time indicator */}
+      <div style={{ 
+        position: 'fixed', 
+        bottom: '20px', 
+        right: '20px', 
+        background: `linear-gradient(135deg, ${colors.green}, ${colors.blue})`, 
+        color: colors.white, 
+        padding: '0.75rem 1.5rem', 
+        borderRadius: '25px',
+        fontSize: '0.9rem',
+        fontWeight: '600',
+        boxShadow: '0 8px 25px rgba(6, 155, 71, 0.4)',
+        zIndex: 1000
+      }}>
+        🟢 Live Updates Active
+      </div>
+
+      {/* CSS Animation */}
+      <style>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 };

@@ -11,6 +11,20 @@ const api = axios.create({
   },
 });
 
+// Add JWT token to requests if available
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 // Socket connection with reconnection options
 export const socket = io('http://localhost:5000', {
   autoConnect: true,
@@ -27,6 +41,7 @@ export const driverAPI = {
   createDriver: (driver) => api.post('/drivers', driver),
   updateDriver: (id, driver) => api.put(`/drivers/${id}`, driver),
   deleteDriver: (id) => api.delete(`/drivers/${id}`),
+  loginDriver: (credentials) => api.post('/drivers/login', credentials),
 };
 
 // Parking Slot API

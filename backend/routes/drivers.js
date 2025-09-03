@@ -5,7 +5,8 @@ const {
   getDriverById,
   createDriver,
   updateDriver,
-  deleteDriver
+  deleteDriver,
+  loginDriver
 } = require('../controllers/driverController');
 
 // Get all drivers
@@ -16,6 +17,9 @@ router.get('/:id', getDriverById);
 
 // Create new driver
 router.post('/', createDriver);
+
+// Login driver
+router.post('/login', loginDriver);
 
 // Update driver
 router.put('/:id', updateDriver);

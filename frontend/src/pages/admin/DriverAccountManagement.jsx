@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { driverAPI } from '../../services/api';
-import { colors } from '../../utils/helpers';
+
+// Professional color scheme
+const colors = {
+  white: '#FFFFFF',
+  cream: '#FBE1AD',
+  blue: '#0074D5',
+  green: '#069B47',
+  red: '#C80306',
+  darkGray: '#40403E',
+  orange: '#C16D00',
+  yellow: '#F1A100'
+};
 
 const DriverAccountManagement = () => {
   const [drivers, setDrivers] = useState([]);
@@ -105,17 +116,79 @@ const DriverAccountManagement = () => {
   };
 
   if (loading) {
-    return <div className="loading">Loading drivers...</div>;
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '50vh',
+        fontSize: '1.2rem',
+        color: colors.darkGray
+      }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '1rem'
+        }}>
+          <div style={{
+            width: '30px',
+            height: '30px',
+            border: `3px solid ${colors.blue}`,
+            borderTop: '3px solid transparent',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite'
+          }}></div>
+          Loading drivers...
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div>
-      <h2 style={{ marginBottom: '2rem', color: colors.darkGray }}>
-        Driver Account Management
-      </h2>
+    <div style={{
+      padding: '2rem',
+      background: '#f8f9fa',
+      minHeight: '100vh',
+      fontFamily: 'Arial, sans-serif'
+    }}>
+      {/* Header */}
+      <div style={{
+        background: `linear-gradient(135deg, ${colors.blue}, ${colors.green})`,
+        padding: '2rem',
+        borderRadius: '15px',
+        marginBottom: '2rem',
+        color: colors.white,
+        boxShadow: '0 8px 25px rgba(0, 116, 213, 0.2)'
+      }}>
+        <h1 style={{
+          margin: 0,
+          fontSize: '2.5rem',
+          fontWeight: 'bold',
+          marginBottom: '0.5rem'
+        }}>
+          Driver Account Management
+        </h1>
+        <p style={{
+          margin: 0,
+          fontSize: '1.1rem',
+          opacity: 0.9
+        }}>
+          Manage driver accounts and permissions
+        </p>
+      </div>
 
+      {/* Message Alert */}
       {message.text && (
-        <div className={`alert alert-${message.type === 'error' ? 'danger' : 'success'}`}>
+        <div style={{
+          background: message.type === 'error' ? `${colors.red}10` : `${colors.green}10`,
+          border: `1px solid ${message.type === 'error' ? colors.red : colors.green}`,
+          color: message.type === 'error' ? colors.red : colors.green,
+          padding: '1rem',
+          borderRadius: '12px',
+          marginBottom: '2rem',
+          fontSize: '0.95rem',
+          fontWeight: '500'
+        }}>
           {message.text}
         </div>
       )}
@@ -123,96 +196,307 @@ const DriverAccountManagement = () => {
       {/* Add New Driver Button */}
       <div style={{ marginBottom: '2rem' }}>
         <button
-          className="btn-primary"
           onClick={() => setShowForm(true)}
           disabled={showForm}
+          style={{
+            background: showForm ? '#E1E5E9' : `linear-gradient(135deg, ${colors.blue}, ${colors.green})`,
+            color: colors.white,
+            border: 'none',
+            padding: '1rem 2rem',
+            borderRadius: '12px',
+            fontSize: '1.1rem',
+            fontWeight: '600',
+            cursor: showForm ? 'not-allowed' : 'pointer',
+            transition: 'all 0.3s ease',
+            boxShadow: showForm ? 'none' : '0 8px 25px rgba(0, 116, 213, 0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
+          }}
+          onMouseEnter={(e) => {
+            if (!showForm) {
+              e.target.style.transform = 'translateY(-2px)';
+              e.target.style.boxShadow = '0 12px 35px rgba(0, 116, 213, 0.4)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!showForm) {
+              e.target.style.transform = 'translateY(0)';
+              e.target.style.boxShadow = '0 8px 25px rgba(0, 116, 213, 0.3)';
+            }
+          }}
         >
+          <span style={{ fontSize: '1.2rem' }}>+</span>
           Add New Driver
         </button>
       </div>
 
       {/* Driver Form */}
       {showForm && (
-        <div className="card" style={{ marginBottom: '2rem' }}>
-          <h3 style={{ marginBottom: '1.5rem', color: colors.darkGray }}>
+        <div style={{
+          background: colors.white,
+          borderRadius: '15px',
+          padding: '2rem',
+          marginBottom: '2rem',
+          boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)',
+          border: `1px solid #E1E5E9`
+        }}>
+          <h3 style={{
+            marginBottom: '1.5rem',
+            color: colors.darkGray,
+            fontSize: '1.8rem',
+            fontWeight: 'bold'
+          }}>
             {editingDriver ? 'Update Driver' : 'Add New Driver'}
           </h3>
           <form onSubmit={handleSubmit}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-              <div className="form-group">
-                <label className="form-label">Driver ID</label>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+              <div>
+                <label style={{
+                  display: 'block',
+                  marginBottom: '0.5rem',
+                  color: colors.darkGray,
+                  fontWeight: '600',
+                  fontSize: '0.95rem'
+                }}>
+                  Driver ID
+                </label>
                 <input
                   type="text"
                   name="driverId"
                   value={formData.driverId}
                   onChange={handleInputChange}
-                  className="form-control"
                   required
-                  disabled={editingDriver} // Don't allow editing driver ID
+                  disabled={editingDriver}
                   placeholder="Enter driver ID"
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '2px solid #E1E5E9',
+                    borderRadius: '8px',
+                    fontSize: '1rem',
+                    transition: 'all 0.3s ease',
+                    boxSizing: 'border-box',
+                    backgroundColor: editingDriver ? '#f5f5f5' : colors.white
+                  }}
+                  onFocus={(e) => {
+                    if (!editingDriver) {
+                      e.target.style.borderColor = colors.blue;
+                      e.target.style.boxShadow = `0 0 0 3px ${colors.blue}20`;
+                    }
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#E1E5E9';
+                    e.target.style.boxShadow = 'none';
+                  }}
                 />
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Full Name</label>
+              <div>
+                <label style={{
+                  display: 'block',
+                  marginBottom: '0.5rem',
+                  color: colors.darkGray,
+                  fontWeight: '600',
+                  fontSize: '0.95rem'
+                }}>
+                  Full Name
+                </label>
                 <input
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  className="form-control"
                   required
                   placeholder="Enter full name"
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '2px solid #E1E5E9',
+                    borderRadius: '8px',
+                    fontSize: '1rem',
+                    transition: 'all 0.3s ease',
+                    boxSizing: 'border-box',
+                    backgroundColor: colors.white
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = colors.blue;
+                    e.target.style.boxShadow = `0 0 0 3px ${colors.blue}20`;
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#E1E5E9';
+                    e.target.style.boxShadow = 'none';
+                  }}
                 />
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Email</label>
+              <div>
+                <label style={{
+                  display: 'block',
+                  marginBottom: '0.5rem',
+                  color: colors.darkGray,
+                  fontWeight: '600',
+                  fontSize: '0.95rem'
+                }}>
+                  Email
+                </label>
                 <input
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="form-control"
                   required
                   placeholder="Enter email address"
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '2px solid #E1E5E9',
+                    borderRadius: '8px',
+                    fontSize: '1rem',
+                    transition: 'all 0.3s ease',
+                    boxSizing: 'border-box',
+                    backgroundColor: colors.white
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = colors.blue;
+                    e.target.style.boxShadow = `0 0 0 3px ${colors.blue}20`;
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#E1E5E9';
+                    e.target.style.boxShadow = 'none';
+                  }}
                 />
               </div>
 
-              <div className="form-group">
-                <label className="form-label">NIC Number</label>
+              <div>
+                <label style={{
+                  display: 'block',
+                  marginBottom: '0.5rem',
+                  color: colors.darkGray,
+                  fontWeight: '600',
+                  fontSize: '0.95rem'
+                }}>
+                  NIC Number
+                </label>
                 <input
                   type="text"
                   name="nic"
                   value={formData.nic}
                   onChange={handleInputChange}
-                  className="form-control"
                   required
                   placeholder="Enter NIC number"
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '2px solid #E1E5E9',
+                    borderRadius: '8px',
+                    fontSize: '1rem',
+                    transition: 'all 0.3s ease',
+                    boxSizing: 'border-box',
+                    backgroundColor: colors.white
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = colors.blue;
+                    e.target.style.boxShadow = `0 0 0 3px ${colors.blue}20`;
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#E1E5E9';
+                    e.target.style.boxShadow = 'none';
+                  }}
                 />
               </div>
 
               {!editingDriver && (
-                <div className="form-group">
-                  <label className="form-label">Password</label>
+                <div>
+                  <label style={{
+                    display: 'block',
+                    marginBottom: '0.5rem',
+                    color: colors.darkGray,
+                    fontWeight: '600',
+                    fontSize: '0.95rem'
+                  }}>
+                    Password
+                  </label>
                   <input
                     type="password"
                     name="password"
                     value={formData.password}
                     onChange={handleInputChange}
-                    className="form-control"
                     required
                     placeholder="Enter password"
+                    style={{
+                      width: '100%',
+                      padding: '0.75rem',
+                      border: '2px solid #E1E5E9',
+                      borderRadius: '8px',
+                      fontSize: '1rem',
+                      transition: 'all 0.3s ease',
+                      boxSizing: 'border-box',
+                      backgroundColor: colors.white
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = colors.blue;
+                      e.target.style.boxShadow = `0 0 0 3px ${colors.blue}20`;
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#E1E5E9';
+                      e.target.style.boxShadow = 'none';
+                    }}
                   />
                 </div>
               )}
             </div>
 
-            <div style={{ marginTop: '1rem', display: 'flex', gap: '1rem' }}>
-              <button type="submit" className="btn-success">
+            <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem' }}>
+              <button
+                type="submit"
+                style={{
+                  background: `linear-gradient(135deg, ${colors.green}, ${colors.blue})`,
+                  color: colors.white,
+                  border: 'none',
+                  padding: '0.75rem 1.5rem',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  boxShadow: '0 4px 15px rgba(6, 155, 71, 0.3)'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.transform = 'translateY(-1px)';
+                  e.target.style.boxShadow = '0 6px 20px rgba(6, 155, 71, 0.4)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.transform = 'translateY(0)';
+                  e.target.style.boxShadow = '0 4px 15px rgba(6, 155, 71, 0.3)';
+                }}
+              >
                 {editingDriver ? 'Update Driver' : 'Add Driver'}
               </button>
-              <button type="button" className="btn-danger" onClick={resetForm}>
+              <button
+                type="button"
+                onClick={resetForm}
+                style={{
+                  background: colors.red,
+                  color: colors.white,
+                  border: 'none',
+                  padding: '0.75rem 1.5rem',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  boxShadow: '0 4px 15px rgba(200, 3, 6, 0.3)'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.transform = 'translateY(-1px)';
+                  e.target.style.boxShadow = '0 6px 20px rgba(200, 3, 6, 0.4)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.transform = 'translateY(0)';
+                  e.target.style.boxShadow = '0 4px 15px rgba(200, 3, 6, 0.3)';
+                }}
+              >
                 Cancel
               </button>
             </div>
@@ -221,49 +505,196 @@ const DriverAccountManagement = () => {
       )}
 
       {/* Drivers Table */}
-      <div className="card">
-        <h3 style={{ marginBottom: '1.5rem', color: colors.darkGray }}>
+      <div style={{
+        background: colors.white,
+        borderRadius: '15px',
+        padding: '2rem',
+        marginBottom: '2rem',
+        boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)',
+        border: `1px solid #E1E5E9`
+      }}>
+        <h3 style={{
+          marginBottom: '1.5rem',
+          color: colors.darkGray,
+          fontSize: '1.8rem',
+          fontWeight: 'bold'
+        }}>
           Registered Drivers ({drivers.length})
         </h3>
 
         {drivers.length === 0 ? (
-          <div className="no-data">No drivers registered yet</div>
+          <div style={{
+            textAlign: 'center',
+            padding: '3rem',
+            color: colors.darkGray,
+            fontSize: '1.1rem',
+            opacity: 0.7
+          }}>
+            No drivers registered yet
+          </div>
         ) : (
           <div style={{ overflowX: 'auto' }}>
-            <table className="table">
+            <table style={{
+              width: '100%',
+              borderCollapse: 'collapse',
+              fontSize: '0.95rem'
+            }}>
               <thead>
-                <tr>
-                  <th>Driver ID</th>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>NIC</th>
-                  <th>Registration Date</th>
-                  <th>Actions</th>
+                <tr style={{
+                  background: `linear-gradient(135deg, ${colors.blue}, ${colors.green})`,
+                  color: colors.white
+                }}>
+                  <th style={{
+                    padding: '1rem',
+                    textAlign: 'left',
+                    fontWeight: '600',
+                    borderBottom: '2px solid rgba(255,255,255,0.2)'
+                  }}>
+                    Driver ID
+                  </th>
+                  <th style={{
+                    padding: '1rem',
+                    textAlign: 'left',
+                    fontWeight: '600',
+                    borderBottom: '2px solid rgba(255,255,255,0.2)'
+                  }}>
+                    Name
+                  </th>
+                  <th style={{
+                    padding: '1rem',
+                    textAlign: 'left',
+                    fontWeight: '600',
+                    borderBottom: '2px solid rgba(255,255,255,0.2)'
+                  }}>
+                    Email
+                  </th>
+                  <th style={{
+                    padding: '1rem',
+                    textAlign: 'left',
+                    fontWeight: '600',
+                    borderBottom: '2px solid rgba(255,255,255,0.2)'
+                  }}>
+                    NIC
+                  </th>
+                  <th style={{
+                    padding: '1rem',
+                    textAlign: 'left',
+                    fontWeight: '600',
+                    borderBottom: '2px solid rgba(255,255,255,0.2)'
+                  }}>
+                    Registration Date
+                  </th>
+                  <th style={{
+                    padding: '1rem',
+                    textAlign: 'left',
+                    fontWeight: '600',
+                    borderBottom: '2px solid rgba(255,255,255,0.2)'
+                  }}>
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                {drivers.map((driver) => (
-                  <tr key={driver._id}>
-                    <td style={{ fontWeight: 'bold', color: colors.blue }}>
+                {drivers.map((driver, index) => (
+                  <tr key={driver._id} style={{
+                    background: index % 2 === 0 ? colors.white : '#f8f9fa',
+                    transition: 'background-color 0.3s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.parentElement.style.backgroundColor = '#f0f8ff';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.parentElement.style.backgroundColor = index % 2 === 0 ? colors.white : '#f8f9fa';
+                  }}
+                  >
+                    <td style={{
+                      padding: '1rem',
+                      fontWeight: 'bold',
+                      color: colors.blue,
+                      borderBottom: '1px solid #E1E5E9'
+                    }}>
                       {driver.driverId}
                     </td>
-                    <td>{driver.name}</td>
-                    <td>{driver.email}</td>
-                    <td>{driver.nic}</td>
-                    <td>{new Date(driver.createdAt).toLocaleDateString()}</td>
-                    <td>
+                    <td style={{
+                      padding: '1rem',
+                      color: colors.darkGray,
+                      borderBottom: '1px solid #E1E5E9'
+                    }}>
+                      {driver.name}
+                    </td>
+                    <td style={{
+                      padding: '1rem',
+                      color: colors.darkGray,
+                      borderBottom: '1px solid #E1E5E9'
+                    }}>
+                      {driver.email}
+                    </td>
+                    <td style={{
+                      padding: '1rem',
+                      color: colors.darkGray,
+                      borderBottom: '1px solid #E1E5E9'
+                    }}>
+                      {driver.nic}
+                    </td>
+                    <td style={{
+                      padding: '1rem',
+                      color: colors.darkGray,
+                      borderBottom: '1px solid #E1E5E9'
+                    }}>
+                      {new Date(driver.createdAt).toLocaleDateString()}
+                    </td>
+                    <td style={{
+                      padding: '1rem',
+                      borderBottom: '1px solid #E1E5E9'
+                    }}>
                       <div style={{ display: 'flex', gap: '0.5rem' }}>
                         <button
-                          className="btn-warning"
                           onClick={() => handleEdit(driver)}
-                          style={{ fontSize: '0.8rem', padding: '0.3rem 0.6rem' }}
+                          style={{
+                            background: colors.orange,
+                            color: colors.white,
+                            border: 'none',
+                            padding: '0.5rem 1rem',
+                            borderRadius: '6px',
+                            fontSize: '0.85rem',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease',
+                            boxShadow: '0 2px 8px rgba(193, 109, 0, 0.3)'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.transform = 'translateY(-1px)';
+                            e.target.style.boxShadow = '0 4px 12px rgba(193, 109, 0, 0.4)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.transform = 'translateY(0)';
+                            e.target.style.boxShadow = '0 2px 8px rgba(193, 109, 0, 0.3)';
+                          }}
                         >
                           Update
                         </button>
                         <button
-                          className="btn-danger"
                           onClick={() => handleDelete(driver._id, driver.name)}
-                          style={{ fontSize: '0.8rem', padding: '0.3rem 0.6rem' }}
+                          style={{
+                            background: colors.red,
+                            color: colors.white,
+                            border: 'none',
+                            padding: '0.5rem 1rem',
+                            borderRadius: '6px',
+                            fontSize: '0.85rem',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease',
+                            boxShadow: '0 2px 8px rgba(200, 3, 6, 0.3)'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.transform = 'translateY(-1px)';
+                            e.target.style.boxShadow = '0 4px 12px rgba(200, 3, 6, 0.4)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.transform = 'translateY(0)';
+                            e.target.style.boxShadow = '0 2px 8px rgba(200, 3, 6, 0.3)';
+                          }}
                         >
                           Delete
                         </button>
@@ -278,33 +709,109 @@ const DriverAccountManagement = () => {
       </div>
 
       {/* Summary Statistics */}
-      <div className="card" style={{ marginTop: '2rem' }}>
-        <h3 style={{ marginBottom: '1.5rem', color: colors.darkGray }}>Statistics</h3>
-        <div className="stats-grid">
-          <div className="stat-card total">
-            <div className="stat-number">{drivers.length}</div>
-            <div className="stat-label">Total Drivers</div>
+      <div style={{
+        background: colors.white,
+        borderRadius: '15px',
+        padding: '2rem',
+        marginTop: '2rem',
+        boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)',
+        border: `1px solid #E1E5E9`
+      }}>
+        <h3 style={{
+          marginBottom: '1.5rem',
+          color: colors.darkGray,
+          fontSize: '1.8rem',
+          fontWeight: 'bold'
+        }}>
+          Statistics
+        </h3>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: '1.5rem'
+        }}>
+          <div style={{
+            background: `linear-gradient(135deg, ${colors.blue}, ${colors.green})`,
+            color: colors.white,
+            padding: '1.5rem',
+            borderRadius: '12px',
+            textAlign: 'center',
+            boxShadow: '0 8px 25px rgba(0, 116, 213, 0.3)'
+          }}>
+            <div style={{
+              fontSize: '2.5rem',
+              fontWeight: 'bold',
+              marginBottom: '0.5rem'
+            }}>
+              {drivers.length}
+            </div>
+            <div style={{
+              fontSize: '1rem',
+              opacity: 0.9
+            }}>
+              Total Drivers
+            </div>
           </div>
-          <div className="stat-card">
-            <div className="stat-number">
+          <div style={{
+            background: `linear-gradient(135deg, ${colors.green}, ${colors.blue})`,
+            color: colors.white,
+            padding: '1.5rem',
+            borderRadius: '12px',
+            textAlign: 'center',
+            boxShadow: '0 8px 25px rgba(6, 155, 71, 0.3)'
+          }}>
+            <div style={{
+              fontSize: '2.5rem',
+              fontWeight: 'bold',
+              marginBottom: '0.5rem'
+            }}>
               {drivers.filter(d => 
                 new Date(d.createdAt).toDateString() === new Date().toDateString()
               ).length}
             </div>
-            <div className="stat-label">Registered Today</div>
+            <div style={{
+              fontSize: '1rem',
+              opacity: 0.9
+            }}>
+              Registered Today
+            </div>
           </div>
-          <div className="stat-card">
-            <div className="stat-number">
+          <div style={{
+            background: `linear-gradient(135deg, ${colors.orange}, ${colors.yellow})`,
+            color: colors.white,
+            padding: '1.5rem',
+            borderRadius: '12px',
+            textAlign: 'center',
+            boxShadow: '0 8px 25px rgba(193, 109, 0, 0.3)'
+          }}>
+            <div style={{
+              fontSize: '2.5rem',
+              fontWeight: 'bold',
+              marginBottom: '0.5rem'
+            }}>
               {drivers.filter(d => 
                 new Date(d.createdAt) >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
               ).length}
             </div>
-            <div className="stat-label">This Week</div>
+            <div style={{
+              fontSize: '1rem',
+              opacity: 0.9
+            }}>
+              This Week
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
-};
+
+             {/* CSS Animation */}
+       <style>{`
+         @keyframes spin {
+           0% { transform: rotate(0deg); }
+           100% { transform: rotate(360deg); }
+         }
+       `}</style>
+     </div>
+   );
+ };
 
 export default DriverAccountManagement;

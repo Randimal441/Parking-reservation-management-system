@@ -1,6 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { reservationAPI, parkingSlotAPI, socket } from '../../services/api';
-import { colors, formatDate, formatTime } from '../../utils/helpers';
+
+// Professional color scheme
+const colors = {
+  white: '#FFFFFF',
+  cream: '#FBE1AD',
+  blue: '#0074D5',
+  green: '#069B47',
+  red: '#C80306',
+  darkGray: '#40403E',
+  orange: '#C16D00',
+  yellow: '#F1A100'
+};
+
+// Helper functions
+const formatDate = (dateString) => {
+  return new Date(dateString).toLocaleDateString();
+};
+
+const formatTime = (dateString) => {
+  return new Date(dateString).toLocaleTimeString();
+};
 
 const ReservationManagement = () => {
   const [reservations, setReservations] = useState([]);
@@ -170,14 +190,82 @@ const ReservationManagement = () => {
   );
 
   if (loading) {
-    return <div className="loading">Loading reservation data...</div>;
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '50vh',
+        fontSize: '1.2rem',
+        color: colors.darkGray
+      }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '1rem'
+        }}>
+          <div style={{
+            width: '30px',
+            height: '30px',
+            border: `3px solid ${colors.blue}`,
+            borderTop: '3px solid transparent',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite'
+          }}></div>
+          Loading reservation data...
+        </div>
+      </div>
+    );
+  }
+
+  // Safety check for reservations
+  if (!reservations || !Array.isArray(reservations)) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '50vh',
+        fontSize: '1.2rem',
+        color: colors.darkGray
+      }}>
+        No reservation data available...
+      </div>
+    );
   }
 
   return (
-    <div>
-      <h2 style={{ marginBottom: '2rem', color: colors.darkGray }}>
-        Reservation Management
-      </h2>
+    <div style={{
+      padding: '2rem',
+      background: '#f8f9fa',
+      minHeight: '100vh',
+      fontFamily: 'Arial, sans-serif'
+    }}>
+      {/* Header */}
+      <div style={{
+        background: `linear-gradient(135deg, ${colors.blue}, ${colors.green})`,
+        padding: '2rem',
+        borderRadius: '15px',
+        marginBottom: '2rem',
+        color: colors.white,
+        boxShadow: '0 8px 25px rgba(0, 116, 213, 0.2)'
+      }}>
+        <h1 style={{
+          margin: 0,
+          fontSize: '2.5rem',
+          fontWeight: 'bold',
+          marginBottom: '0.5rem'
+        }}>
+          Reservation Management
+        </h1>
+        <p style={{
+          margin: 0,
+          fontSize: '1.1rem',
+          opacity: 0.9
+        }}>
+          Manage parking reservations and track occupancy
+        </p>
+      </div>
 
       {message.text && (
         <div className={`alert alert-${message.type === 'error' ? 'danger' : 'success'}`}>
@@ -312,15 +400,15 @@ const ReservationManagement = () => {
                 </tr>
               </thead>
               <tbody>
-                {reservations.map((reservation) => (
-                  <tr key={reservation._id}>
+                {reservations.filter(reservation => reservation && reservation.reservationId).map((reservation) => (
+                  <tr key={reservation._id || reservation.reservationId || Math.random()}>
                     <td style={{ fontWeight: 'bold', color: colors.blue }}>
                       {reservation.reservationId}
                     </td>
                     <td>
                       <div>
-                        <strong>ID: {typeof reservation.driverId === 'object' ? reservation.driverId._id : reservation.driverId}</strong>
-                        {typeof reservation.driverId === 'object' && reservation.driverId.name && (
+                        <strong>ID: {typeof reservation.driverId === 'object' ? (reservation.driverId?._id || 'N/A') : (reservation.driverId || 'N/A')}</strong>
+                        {typeof reservation.driverId === 'object' && reservation.driverId?.name && (
                           <>
                             <br />
                             <small style={{ color: colors.darkGray }}>
@@ -375,7 +463,7 @@ const ReservationManagement = () => {
                         </button>
                         <button
                           className="btn-danger"
-                          onClick={() => handleDelete(reservation._id, reservation.reservationId)}
+                          onClick={() => handleDelete(reservation._id || reservation.reservationId, reservation.reservationId)}
                           style={{ fontSize: '0.8rem', padding: '0.3rem 0.6rem' }}
                         >
                           Delete
@@ -425,22 +513,32 @@ const ReservationManagement = () => {
         </div>
       </div>
 
-      {/* Real-time indicator */}
-      <div style={{ 
-        position: 'fixed', 
-        bottom: '20px', 
-        right: '20px', 
-        background: colors.green, 
-        color: colors.white, 
-        padding: '0.5rem 1rem', 
-        borderRadius: '20px',
-        fontSize: '0.8rem',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
-      }}>
-        🟢 Live Updates Active
-      </div>
-    </div>
-  );
-};
+             {/* Real-time indicator */}
+       <div style={{ 
+         position: 'fixed', 
+         bottom: '20px', 
+         right: '20px', 
+         background: `linear-gradient(135deg, ${colors.green}, ${colors.blue})`, 
+         color: colors.white, 
+         padding: '0.75rem 1.5rem', 
+         borderRadius: '25px',
+         fontSize: '0.9rem',
+         fontWeight: '600',
+         boxShadow: '0 8px 25px rgba(6, 155, 71, 0.4)',
+         zIndex: 1000
+       }}>
+         🟢 Live Updates Active
+       </div>
+
+       {/* CSS Animation */}
+       <style>{`
+         @keyframes spin {
+           0% { transform: rotate(0deg); }
+           100% { transform: rotate(360deg); }
+         }
+       `}</style>
+     </div>
+   );
+ };
 
 export default ReservationManagement;

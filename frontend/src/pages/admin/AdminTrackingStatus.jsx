@@ -2,7 +2,27 @@ import React, { useState, useEffect } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement } from 'chart.js';
 import { Doughnut, Bar } from 'react-chartjs-2';
 import { reservationAPI, parkingSlotAPI, socket } from '../../services/api';
-import { colors, formatDate, formatTime } from '../../utils/helpers';
+
+// Professional color scheme
+const colors = {
+  white: '#FFFFFF',
+  cream: '#FBE1AD',
+  blue: '#0074D5',
+  green: '#069B47',
+  red: '#C80306',
+  darkGray: '#40403E',
+  orange: '#C16D00',
+  yellow: '#F1A100'
+};
+
+// Helper functions
+const formatDate = (dateString) => {
+  return new Date(dateString).toLocaleDateString();
+};
+
+const formatTime = (dateString) => {
+  return new Date(dateString).toLocaleTimeString();
+};
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
@@ -146,16 +166,84 @@ const AdminTrackingStatus = () => {
   };
 
   if (loading) {
-    return <div className="loading">Loading tracking data...</div>;
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '50vh',
+        fontSize: '1.2rem',
+        color: colors.darkGray
+      }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '1rem'
+        }}>
+          <div style={{
+            width: '30px',
+            height: '30px',
+            border: `3px solid ${colors.blue}`,
+            borderTop: '3px solid transparent',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite'
+          }}></div>
+          Loading tracking data...
+        </div>
+      </div>
+    );
+  }
+
+  // Safety check for reservations
+  if (!reservations || !Array.isArray(reservations)) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '50vh',
+        fontSize: '1.2rem',
+        color: colors.darkGray
+      }}>
+        No tracking data available...
+      </div>
+    );
   }
 
   const filteredReservations = getFilteredReservations();
 
   return (
-    <div>
-      <h2 style={{ marginBottom: '2rem', color: colors.darkGray }}>
-        Admin Tracking Status Dashboard
-      </h2>
+    <div style={{
+      padding: '2rem',
+      background: '#f8f9fa',
+      minHeight: '100vh',
+      fontFamily: 'Arial, sans-serif'
+    }}>
+      {/* Header */}
+      <div style={{
+        background: `linear-gradient(135deg, ${colors.blue}, ${colors.green})`,
+        padding: '2rem',
+        borderRadius: '15px',
+        marginBottom: '2rem',
+        color: colors.white,
+        boxShadow: '0 8px 25px rgba(0, 116, 213, 0.2)'
+      }}>
+        <h1 style={{
+          margin: 0,
+          fontSize: '2.5rem',
+          fontWeight: 'bold',
+          marginBottom: '0.5rem'
+        }}>
+          Admin Tracking Status Dashboard
+        </h1>
+        <p style={{
+          margin: 0,
+          fontSize: '1.1rem',
+          opacity: 0.9
+        }}>
+          Real-time monitoring and analytics
+        </p>
+      </div>
 
       {/* Real-time Statistics */}
       <div className="card" style={{ marginBottom: '2rem' }}>
@@ -265,17 +353,17 @@ const AdminTrackingStatus = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredReservations.map((reservation) => {
+                {filteredReservations.filter(reservation => reservation && reservation.reservationId).map((reservation) => {
                   const entryTime = new Date(reservation.entryTime);
                   const exitTime = new Date(reservation.exitTime);
                   const durationHours = Math.abs(exitTime - entryTime) / 36e5; // Convert to hours
 
                   return (
-                    <tr key={reservation._id}>
+                    <tr key={reservation._id || reservation.reservationId || Math.random()}>
                       <td style={{ fontWeight: 'bold', color: colors.blue }}>
                         {reservation.reservationId}
                       </td>
-                      <td>{typeof reservation.driverId === 'object' ? reservation.driverId._id : reservation.driverId}</td>
+                      <td>{typeof reservation.driverId === 'object' ? (reservation.driverId?._id || 'N/A') : (reservation.driverId || 'N/A')}</td>
                       <td>
                         <div>
                           <strong>{reservation.parkingSlotId?.slotId || 'N/A'}</strong>

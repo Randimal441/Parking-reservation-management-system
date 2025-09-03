@@ -39,7 +39,6 @@ function App() {
           <>
             <Navbar 
               userType={userType} 
-              setUserType={setUserType} 
               setIsAuthenticated={setIsAuthenticated}
             />
             <div style={{ display: 'flex' }}>
